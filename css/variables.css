@@ -1,0 +1,78 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   variables.css  —  design tokens (light & dark) + global reset
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Reset ────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design tokens ────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg:        #f5f1ea;
+  --surface:   #ffffff;
+  --surface2:  #ece8e0;
+  --tree-bg:   #faf8f4;
+
+  /* Borders & shadows */
+  --border:    #d4cdc3;
+  --shadow:    rgba(0, 0, 0, .10);
+
+  /* Text */
+  --text:      #1b1710;
+  --muted:     #6e6256;
+
+  /* Brand colours */
+  --accent:    #1e52a0;   /* deep ink blue */
+  --amber:     #a86212;   /* warm amber */
+
+  /* Semantic colours */
+  --green:     #1a6b35;
+  --red:       #a31f1f;
+
+  /* Gradient used in h1 */
+  --grad-from: #1e52a0;
+  --grad-to:   #c07214;
+
+  /* Probability label background */
+  --prob-patch: rgba(250, 248, 244, 0.94);
+}
+
+[data-theme="dark"] {
+  --bg:        #0d1117;
+  --surface:   #161b22;
+  --surface2:  #1c2430;
+  --tree-bg:   #0d1117;
+
+  --border:    #30363d;
+  --shadow:    rgba(0, 0, 0, .45);
+
+  --text:      #e2ddd6;
+  --muted:     #8a9199;
+
+  --accent:    #5da0f0;
+  --amber:     #e8a048;
+
+  --green:     #3dba52;
+  --red:       #f05050;
+
+  --grad-from: #6ab0ff;
+  --grad-to:   #f0a840;
+
+  --prob-patch: rgba(10, 13, 18, 0.92);
+}
+
+/* ── Base typography ──────────────────────────────────────────────────── */
+html { font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Libre Franklin', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background .25s, color .25s;
+}

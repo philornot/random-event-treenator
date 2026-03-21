@@ -225,11 +225,13 @@ function toXY(node) {
  * Reads globals: levelColors, probTextColor (colors.js)
  *
  * @param {{ title:string, root:object }} treeData
- * @param {boolean} [forExport=false]
+ * @param {boolean} [forExport=false]  - Use plain text labels (no foreignObject).
+ * @param {boolean} [transparent=false] - Omit the background rect (transparent PNG/SVG).
  * @returns {string} SVG markup.
  */
-function buildSVG(treeData, forExport) {
-  forExport = forExport || false;
+function buildSVG(treeData, forExport, transparent) {
+  forExport   = forExport   || false;
+  transparent = transparent || false;
 
   countLeaves(treeData.root);
   var totalW = Math.max(treeData.root._w * LEAF_W, 200);
@@ -289,11 +291,8 @@ function buildSVG(treeData, forExport) {
                  ' font-size="12" font-weight="500"' +
                  ' fill="' + probTextColor + '">' + child.probability + '</text>';
       } else {
-        /* foreignObject for KaTeX rendering */
+        /* foreignObject for KaTeX — background handled by .prob-katex CSS */
         var foW = 72, foH = 36;
-        edges += '<rect x="' + (lx - foW / 2) + '" y="' + (ly - foH / 2) +
-                 '" width="' + foW + '" height="' + foH + '" rx="6"' +
-                 ' fill="' + patchCol + '"/>';
         var safeProb = child.probability
             .replace(/&/g, '&amp;').replace(/"/g, '&quot;');
         edges += '<foreignObject x="' + (lx - foW / 2) +
@@ -345,8 +344,9 @@ function buildSVG(treeData, forExport) {
          ' width="' + svgW + '" height="' + svgH + '"' +
          ' xmlns="http://www.w3.org/2000/svg"' +
          ' xmlns:xhtml="http://www.w3.org/1999/xhtml">' +
-         '<rect width="' + svgW + '" height="' + svgH + '"' +
-         ' fill="' + (isDark ? '#0d1117' : '#faf8f4') + '" rx="8"/>' +
+         (transparent ? '' :
+           '<rect width="' + svgW + '" height="' + svgH + '"' +
+           ' fill="' + (isDark ? '#0d1117' : '#faf8f4') + '" rx="8"/>') +
          edges + nodes +
          '</svg>';
 }

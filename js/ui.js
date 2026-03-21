@@ -605,8 +605,7 @@ function applyModalColors() {
 
 document.getElementById('downloadSvgBtn').addEventListener('click', function () {
   if (!lastTreeData) return;
-  /* Export with plain-text fractions for maximum SVG viewer compatibility */
-  var svgStr = buildSVG(lastTreeData, true);
+  var svgStr = buildExportSVG(false);
   triggerDownload(new Blob([svgStr], { type: 'image/svg+xml' }), 'stochastic-tree.svg');
 });
 
@@ -640,49 +639,64 @@ document.getElementById('copyImgBtn').addEventListener('click', function () {
 });
 
 /**
- * Captures the SVG container as a PNG Blob.
- * Uses html-to-image so that KaTeX-rendered foreignObject content is captured.
+ * Builds an export-ready SVG string:
+ *  - Transparent background (no background rect)
+ *  - Plain-text fraction labels (no foreignObject / KaTeX)
+ *  - Exact viewBox tight to tree content (no wasted space)
+ *
+ * @param {boolean} [solidBg=false]
+ *   Pass true to add a white/dark solid background rect (e.g. for JPEG).
+ * @returns {string} SVG markup.
+ */
+function buildExportSVG(solidBg) {
+  return buildSVG(lastTreeData, true, !solidBg);
+}
+
+/**
+ * Renders the full tree as a sharp PNG Blob.
+ *
+ * Strategy: take the plain-text SVG (exact tree dimensions, transparent bg),
+ * draw it onto a canvas at EXPORT_SCALE× — this avoids capturing the
+ * clipped / panned / zoomed viewport and guarantees the full tree is included
+ * at high resolution.
  *
  * @param {function(Blob|null):void} callback
  */
 function exportPng(callback) {
-  var el = document.getElementById('svgContainer');
-  if (typeof htmlToImage !== 'undefined') {
-    htmlToImage.toBlob(el, { pixelRatio: 2 })
-      .then(function (blob) { callback(blob); })
-      .catch(function () {
-        /* Fallback: render plain-text SVG via canvas */
-        fallbackSvgToPng(callback);
-      });
-  } else {
-    fallbackSvgToPng(callback);
-  }
-}
+  var svgStr = buildExportSVG(false);   /* transparent background */
 
-/**
- * Fallback PNG export that renders the plain-text SVG to a canvas.
- * KaTeX formatting will be absent in this mode.
- *
- * @param {function(Blob|null):void} callback
- */
-function fallbackSvgToPng(callback) {
-  if (!lastTreeData) { callback(null); return; }
-  var svgStr = buildSVG(lastTreeData, true);
-  var blob   = new Blob([svgStr], { type: 'image/svg+xml' });
-  var url    = URL.createObjectURL(blob);
-  var img    = new Image();
+  /* Read actual pixel dimensions from the SVG width/height attributes */
+  var wMatch = svgStr.match(/\bwidth="(\d+(?:\.\d+)?)"/);
+  var hMatch = svgStr.match(/\bheight="(\d+(?:\.\d+)?)"/);
+  if (!wMatch || !hMatch) { callback(null); return; }
+
+  var svgW   = parseFloat(wMatch[1]);
+  var svgH   = parseFloat(hMatch[1]);
+  var SCALE  = 3;   /* 3× = crisp even on a 2× retina print */
+
+  var blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var img  = new Image();
+
   img.onload = function () {
-    var scale  = 2;
-    var canvas = document.createElement('canvas');
-    canvas.width  = img.naturalWidth  * scale;
-    canvas.height = img.naturalHeight * scale;
+    var canvas    = document.createElement('canvas');
+    canvas.width  = Math.ceil(svgW * SCALE);
+    canvas.height = Math.ceil(svgH * SCALE);
+
     var ctx = canvas.getContext('2d');
-    ctx.scale(scale, scale);
-    ctx.drawImage(img, 0, 0);
+    /* Transparent by default — no fillRect needed */
+    ctx.scale(SCALE, SCALE);
+    ctx.drawImage(img, 0, 0, svgW, svgH);
+
     URL.revokeObjectURL(url);
     canvas.toBlob(callback, 'image/png');
   };
-  img.onerror = function () { URL.revokeObjectURL(url); callback(null); };
+
+  img.onerror = function () {
+    URL.revokeObjectURL(url);
+    callback(null);
+  };
+
   img.src = url;
 }
 
@@ -704,6 +718,5 @@ function triggerDownload(blob, filename) {
 }
 
 /* ── Missing i18n key: colorsText (used in modal) ─────────────────────── */
-/* Extend translations with this key if not already defined */
-if (!TRANSLATIONS['en']['colorsText'])  TRANSLATIONS['en']['colorsText']  = 'Text';
-if (!TRANSLATIONS['pl']['colorsText'])  TRANSLATIONS['pl']['colorsText']  = 'Tekst';
+if (!TRANSLATIONS['en']['colorsText']) TRANSLATIONS['en']['colorsText'] = 'Text';
+if (!TRANSLATIONS['pl']['colorsText']) TRANSLATIONS['pl']['colorsText'] = 'Tekst';
