@@ -1,0 +1,365 @@
+/* ── Reset & variables ──────────────────────────────────────────────────── */
+:root {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --surface2: #1c2430;
+  --border:   #30363d;
+  --text:     #e6edf3;
+  --muted:    #8b949e;
+  --accent:   #58a6ff;
+  --amber:    #ffa657;
+  --green:    #3fb950;
+  --red:      #f85149;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+header {
+  width: 100%;
+  padding: 28px 24px 0;
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+header h1 {
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent) 30%, var(--amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+header p {
+  color: var(--muted);
+  font-size: .88rem;
+  margin-top: 4px;
+}
+
+/* ── Lang button ────────────────────────────────────────────────────────── */
+.lang-btn {
+  flex-shrink: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  padding: 8px 14px;
+  transition: border-color .2s, background .2s;
+  margin-top: 4px;
+}
+.lang-btn:hover { border-color: var(--accent); background: #1f2d40; }
+
+/* ── Main layout ────────────────────────────────────────────────────────── */
+main {
+  width: 100%;
+  max-width: 1280px;
+  padding: 24px 20px 60px;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: auto auto auto auto auto;
+  column-gap: 20px;
+  row-gap: 16px;
+}
+
+/* Left column: experiment card, outcomes card, generate btn, error */
+.card:first-of-type { grid-column: 1; }
+.card:last-of-type  { grid-column: 1; }
+
+#generateBtn { grid-column: 1; }
+#errorMsg    { grid-column: 1; }
+
+/* Right column: tree + export (spans all rows) */
+#treeWrap   { grid-column: 2; grid-row: 1 / 6; }
+#exportBtns { grid-column: 2; grid-row: 6; }
+
+/* ── Card ───────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hint {
+  font-size: .78rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: -4px;
+}
+
+/* ── Form controls ──────────────────────────────────────────────────────── */
+label {
+  display: block;
+  font-size: .85rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+input[type="text"] {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: .93rem;
+  padding: 8px 11px;
+  outline: none;
+  transition: border-color .2s;
+}
+input[type="text"]:focus { border-color: var(--accent); }
+
+.row { display: flex; align-items: center; gap: 10px; }
+
+/* ── Stepper ────────────────────────────────────────────────────────────── */
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.stepper button {
+  background: var(--surface2);
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 7px 13px;
+  transition: background .15s;
+}
+.stepper button:hover { background: #273044; }
+.stepper span {
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .95rem;
+  font-weight: 600;
+  min-width: 42px;
+  text-align: center;
+  padding: 7px 0;
+  color: var(--accent);
+}
+
+#trialHint { font-size: .72rem; color: var(--amber); }
+
+/* ── Outcomes table ─────────────────────────────────────────────────────── */
+.outcome-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.col-label {
+  font-size: .68rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+#outcomesTable { display: flex; flex-direction: column; gap: 7px; }
+
+.outcome-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.outcome-row input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .88rem;
+}
+
+.del-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: .85rem;
+  padding: 6px 9px;
+  line-height: 1;
+  transition: color .15s, border-color .15s;
+}
+.del-btn:hover { color: var(--red); border-color: var(--red); }
+
+#sumRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: .8rem;
+  color: var(--muted);
+}
+#sumDisplay {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: .88rem;
+}
+#sumDisplay.ok  { color: var(--green); }
+#sumDisplay.bad { color: var(--red); }
+
+#addOutcomeBtn {
+  align-self: flex-start;
+  background: var(--surface2);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: .82rem;
+  padding: 6px 13px;
+  transition: color .15s, border-color .15s;
+}
+#addOutcomeBtn:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ── Generate button ────────────────────────────────────────────────────── */
+#generateBtn {
+  background: linear-gradient(135deg, #1a3a5c, #0d2137);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: .97rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  padding: 13px;
+  transition: background .2s, box-shadow .2s, transform .1s;
+}
+#generateBtn:hover {
+  background: linear-gradient(135deg, #1f4575, #102946);
+  box-shadow: 0 0 18px rgba(88,166,255,.2);
+}
+#generateBtn:active { transform: scale(.98); }
+
+#errorMsg {
+  font-size: .82rem;
+  color: var(--red);
+  min-height: 18px;
+  text-align: center;
+}
+
+/* ── Tree output ────────────────────────────────────────────────────────── */
+#treeWrap {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: auto;
+  padding: 8px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#treeTitle {
+  text-align: center;
+  font-size: .88rem;
+  font-style: italic;
+  color: var(--muted);
+  padding: 6px 0 4px;
+  min-height: 24px;
+}
+
+#svgContainer {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  width: 100%;
+}
+
+/* ── Export buttons ─────────────────────────────────────────────────────── */
+#exportBtns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+#exportBtns.hidden { display: none; }
+
+#exportBtns button {
+  flex: 1;
+  min-width: 140px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: .83rem;
+  padding: 9px 12px;
+  transition: color .2s, border-color .2s;
+}
+#exportBtns button:hover { color: var(--text); border-color: var(--accent); }
+#exportBtns button.flash { color: var(--green); border-color: var(--green); }
+
+/* ── Tooltip ────────────────────────────────────────────────────────────── */
+#tooltip {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  background: #1a2840;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  padding: 7px 12px;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,.6);
+  transition: opacity .12s;
+}
+#tooltip.hidden { opacity: 0; pointer-events: none; }
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+  .card:first-of-type,
+  .card:last-of-type,
+  #generateBtn,
+  #errorMsg   { grid-column: 1; }
+  #treeWrap   { grid-column: 1; grid-row: auto; }
+  #exportBtns { grid-column: 1; grid-row: auto; }
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stochastic Tree Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="tooltip"></div>
+
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1 data-i18n="title"></h1>
+        <p data-i18n="subtitle"></p>
+      </div>
+      <button id="langBtn" class="lang-btn"></button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── Experiment ── -->
+    <div class="card">
+      <span class="card-title" data-i18n="experimentLabel"></span>
+      <div>
+        <label for="titleInput" data-i18n="titleLabel"></label>
+        <input type="text" id="titleInput" />
+      </div>
+      <div class="row">
+        <label data-i18n="trialsLabel"></label>
+        <div class="stepper">
+          <button id="decBtn">−</button>
+          <span id="trialCount">3</span>
+          <button id="incBtn">+</button>
+        </div>
+        <span id="trialHint"></span>
+      </div>
+    </div>
+
+    <!-- ── Outcomes ── -->
+    <div class="card">
+      <span class="card-title" data-i18n="outcomesLabel"></span>
+      <p class="hint" data-i18n="outcomesHint"></p>
+      <div class="outcome-header">
+        <span class="col-label" data-i18n="colLabel"></span>
+        <span class="col-label" data-i18n="colProb"></span>
+        <span></span>
+      </div>
+      <div id="outcomesTable"></div>
+      <button id="addOutcomeBtn"></button>
+      <div id="sumRow">
+        <span data-i18n="sumLabel"></span>
+        <span id="sumDisplay" class="bad">—</span>
+      </div>
+    </div>
+
+    <button id="generateBtn"></button>
+    <div id="errorMsg"></div>
+
+    <!-- ── Tree output ── -->
+    <div id="treeWrap">
+      <div id="treeTitle"></div>
+      <div id="svgContainer"></div>
+    </div>
+
+    <!-- ── Export buttons ── -->
+    <div id="exportBtns" class="hidden">
+      <button id="downloadSvgBtn" data-i18n="downloadSvg"></button>
+      <button id="downloadPngBtn" data-i18n="downloadPng"></button>
+      <button id="copyImgBtn"     data-i18n="copyImg"></button>
+    </div>
+
+  </main>
+
+  <script src="i18n.js"></script>
+  <script src="tree.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
