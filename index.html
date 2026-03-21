@@ -4,80 +4,186 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stochastic Tree Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Detect theme before render to prevent flash -->
+  <script>
+    (function () {
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    })();
+  </script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+
+  <!-- Phosphor Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+
+  <!-- html-to-image (PNG export) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+
+  <!-- KaTeX must run before our scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <div id="tooltip"></div>
+  <!-- Floating tooltip -->
+  <div id="tooltip" class="hidden"></div>
 
+  <!-- ── Personalize Modal ─────────────────────────── -->
+  <div id="modal-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+    <div id="modal-panel">
+      <div class="modal-header">
+        <h2 id="modal-heading" data-i18n="personalizeTitle"></h2>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+      <div class="modal-footer">
+        <button id="applyColorsBtn" class="btn-primary">
+          <i class="ph ph-check"></i>
+          <span data-i18n="applyColors"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Header ─────────────────────────────────────── -->
   <header>
     <div class="header-inner">
-      <div>
+      <div class="header-brand">
         <h1 data-i18n="title"></h1>
         <p data-i18n="subtitle"></p>
       </div>
-      <button id="langBtn" class="lang-btn"></button>
+      <div class="header-actions">
+        <button id="themeBtn" class="icon-btn" title="">
+          <i id="themeIcon" class="ph ph-moon"></i>
+        </button>
+        <button id="personalizeBtn" class="btn-labeled">
+          <i class="ph ph-palette"></i>
+          <span data-i18n="personalizeBtn"></span>
+        </button>
+        <button id="langBtn" class="btn-labeled">
+          <i class="ph ph-translate"></i>
+          <span id="langLabel"></span>
+        </button>
+      </div>
     </div>
   </header>
 
+  <!-- ── Main ──────────────────────────────────────── -->
   <main>
 
-    <!-- ── Experiment ── -->
-    <div class="card">
-      <span class="card-title" data-i18n="experimentLabel"></span>
-      <div>
-        <label for="titleInput" data-i18n="titleLabel"></label>
-        <input type="text" id="titleInput" />
-      </div>
-      <div class="row">
-        <label data-i18n="trialsLabel"></label>
-        <div class="stepper">
-          <button id="decBtn">−</button>
-          <span id="trialCount">3</span>
-          <button id="incBtn">+</button>
+    <!-- Left panel -->
+    <aside class="left-panel">
+
+      <div class="card">
+        <span class="card-title" data-i18n="experimentLabel"></span>
+
+        <div class="field">
+          <label for="titleInput" data-i18n="titleLabel"></label>
+          <input type="text" id="titleInput" />
         </div>
-        <span id="trialHint"></span>
+
+        <div class="field">
+          <label data-i18n="trialsLabel"></label>
+          <div class="row gap-sm">
+            <div class="stepper">
+              <button id="decBtn" class="stepper-btn">−</button>
+              <span id="trialCount" tabindex="0" contenteditable="true" spellcheck="false">3</span>
+              <button id="incBtn" class="stepper-btn">+</button>
+            </div>
+            <span id="trialHint"></span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- ── Outcomes ── -->
-    <div class="card">
-      <span class="card-title" data-i18n="outcomesLabel"></span>
-      <p class="hint" data-i18n="outcomesHint"></p>
-      <div class="outcome-header">
-        <span class="col-label" data-i18n="colLabel"></span>
-        <span class="col-label" data-i18n="colProb"></span>
-        <span></span>
+      <div class="card">
+        <span class="card-title" data-i18n="outcomesLabel"></span>
+        <p class="hint" data-i18n="outcomesHint"></p>
+
+        <div class="outcome-header">
+          <span class="col-label" data-i18n="colLabel"></span>
+          <span class="col-label" data-i18n="colProb"></span>
+          <span></span>
+        </div>
+
+        <div id="outcomesTable"></div>
+
+        <div class="outcomes-actions">
+          <button id="addOutcomeBtn" class="btn-dashed">
+            <i class="ph ph-plus"></i>
+            <span data-i18n="addOutcome"></span>
+          </button>
+          <button id="autoProbBtn" class="btn-dashed" id="autoProbBtn">
+            <i class="ph ph-equals"></i>
+            <span data-i18n="autoProb"></span>
+          </button>
+        </div>
+
+        <div id="sumRow">
+          <span class="muted-sm" data-i18n="sumLabel"></span>
+          <span id="sumDisplay" class="bad mono">—</span>
+        </div>
       </div>
-      <div id="outcomesTable"></div>
-      <button id="addOutcomeBtn"></button>
-      <div id="sumRow">
-        <span data-i18n="sumLabel"></span>
-        <span id="sumDisplay" class="bad">—</span>
+
+      <button id="generateBtn" class="btn-generate">
+        <i class="ph ph-tree-structure"></i>
+        <span data-i18n="generate"></span>
+      </button>
+
+      <div id="errorMsg" role="alert"></div>
+
+    </aside>
+
+    <!-- Right panel: tree -->
+    <section class="right-panel">
+      <div id="treeWrap">
+
+        <div id="treeToolbar" class="hidden">
+          <span id="treeTitle"></span>
+          <div class="toolbar-actions">
+            <button id="resetViewBtn" class="icon-btn" data-i18n-title="resetView">
+              <i class="ph ph-arrows-in"></i>
+            </button>
+            <button id="downloadSvgBtn" class="export-btn">
+              <i class="ph ph-download-simple"></i>
+              <span data-i18n="downloadSvg"></span>
+            </button>
+            <button id="downloadPngBtn" class="export-btn">
+              <i class="ph ph-image"></i>
+              <span data-i18n="downloadPng"></span>
+            </button>
+            <button id="copyImgBtn" class="export-btn">
+              <i class="ph ph-copy"></i>
+              <span data-i18n="copyImg"></span>
+            </button>
+          </div>
+        </div>
+
+        <div id="svgContainer">
+          <div id="treeEmpty">
+            <i class="ph ph-tree-structure tree-empty-icon"></i>
+            <p data-i18n="treeEmpty"></p>
+          </div>
+        </div>
+
+        <div id="zoomHint" class="muted-sm" data-i18n="zoomHint"></div>
+
       </div>
-    </div>
-
-    <button id="generateBtn"></button>
-    <div id="errorMsg"></div>
-
-    <!-- ── Tree output ── -->
-    <div id="treeWrap">
-      <div id="treeTitle"></div>
-      <div id="svgContainer"></div>
-    </div>
-
-    <!-- ── Export buttons ── -->
-    <div id="exportBtns" class="hidden">
-      <button id="downloadSvgBtn" data-i18n="downloadSvg"></button>
-      <button id="downloadPngBtn" data-i18n="downloadPng"></button>
-      <button id="copyImgBtn"     data-i18n="copyImg"></button>
-    </div>
+    </section>
 
   </main>
 
-  <script src="i18n.js"></script>
-  <script src="tree.js"></script>
-  <script src="ui.js"></script>
+  <script defer src="js/i18n.js"></script>
+  <script defer src="js/colors.js"></script>
+  <script defer src="js/tree.js"></script>
+  <script defer src="js/ui.js"></script>
 </body>
 </html>
