@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stochastic Tree Generator</title>
+  <title>Random Event Treenator</title>
 
   <!-- Detect theme before render to prevent flash -->
   <script>
@@ -21,7 +21,6 @@
 
   <!-- Phosphor Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-
 
   <!-- KaTeX must run before our scripts -->
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -61,7 +60,6 @@
     <div class="header-inner">
       <div class="header-brand">
         <h1 data-i18n="title"></h1>
-        <p data-i18n="subtitle"></p>
       </div>
       <div class="header-actions">
         <button id="themeBtn" class="icon-btn" title="">
@@ -123,7 +121,7 @@
             <i class="ph ph-plus"></i>
             <span data-i18n="addOutcome"></span>
           </button>
-          <button id="autoProbBtn" class="btn-dashed" id="autoProbBtn">
+          <button id="autoProbBtn" class="btn-dashed">
             <i class="ph ph-equals"></i>
             <span data-i18n="autoProb"></span>
           </button>

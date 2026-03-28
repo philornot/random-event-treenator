@@ -2,12 +2,26 @@
  * @fileoverview Internationalisation module.
  * Defines all UI strings and exposes helpers to switch language and
  * re-render text across the page.
+ *
+ * Language is initialised from the browser/OS locale (navigator.language).
+ * If the locale starts with "pl", Polish is activated automatically.
  */
 
 'use strict';
 
+/**
+ * Detects the preferred language from the browser locale.
+ * Defaults to English for any non-Polish locale.
+ *
+ * @returns {'en'|'pl'}
+ */
+function detectLang() {
+  var lang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  return lang.startsWith('pl') ? 'pl' : 'en';
+}
+
 /** @type {'en'|'pl'} Currently active language. */
-var currentLang = 'en';
+var currentLang = detectLang();
 
 /**
  * All UI strings keyed by language then translation key.
@@ -15,18 +29,14 @@ var currentLang = 'en';
  */
 var TRANSLATIONS = {
   en: {
-    /* Header */
-    title:              'Stochastic Tree Generator',
-    subtitle:           'Define outcomes manually — no AI required.',
+    title:              'Random Event Treenator',
     langLabel:          'Polski',
     personalizeBtn:     'Personalise',
-    /* Experiment card */
     experimentLabel:    'Experiment',
     titleLabel:         'Title',
     titlePlaceholder:   'e.g. Rolling a fair die 3 times',
     trialsLabel:        'Number of trials',
     trialWarn:          '⚠ tree may be very large',
-    /* Outcomes card */
     outcomesLabel:      'Outcomes & Probabilities',
     outcomesHint:       'Probabilities may be fractions (1/6) or decimals. They must sum to 1.',
     colLabel:           'Label',
@@ -34,17 +44,14 @@ var TRANSLATIONS = {
     addOutcome:         'Add outcome',
     autoProb:           'Equal probabilities',
     sumLabel:           'Sum of probabilities:',
-    /* Buttons */
     generate:           'Generate Tree',
     resetView:          'Reset view',
     downloadSvg:        'SVG',
     downloadPng:        'PNG',
     copyImg:            'Copy',
     copiedOk:           'Copied!',
-    /* Tree area */
     treeEmpty:          'Generate a tree to see it here.',
     zoomHint:           'Scroll to zoom · Drag to pan',
-    /* Personalise modal */
     personalizeTitle:   'Personalise Colors',
     applyColors:        'Apply Colors',
     colorsRoot:         'Root',
@@ -52,10 +59,9 @@ var TRANSLATIONS = {
     colorsBorder:       'Border',
     colorsFill:         'Fill',
     colorsProbText:     'Probability text',
-    /* Tooltip */
+    colorsText:         'Text',
     tooltipPath:        'P({path}) = {prob}',
     tooltipRoot:        'Root node',
-    /* Errors */
     errMinOutcomes:     'Please add at least 2 outcomes.',
     errNoLabel:         'Every outcome must have a label.',
     errInvalidProb:     'All probabilities must be valid numbers or fractions.',
@@ -63,8 +69,7 @@ var TRANSLATIONS = {
     errClipboard:       'Clipboard write not supported in this browser.',
   },
   pl: {
-    title:              'Generator Drzewa Stochastycznego',
-    subtitle:           'Definiuj wyniki ręcznie — bez sztucznej inteligencji.',
+    title:              'Random Event Treenator',
     langLabel:          'English',
     personalizeBtn:     'Personalizuj',
     experimentLabel:    'Eksperyment',
@@ -94,6 +99,7 @@ var TRANSLATIONS = {
     colorsBorder:       'Obramowanie',
     colorsFill:         'Wypełnienie',
     colorsProbText:     'Tekst prawdopodobieństwa',
+    colorsText:         'Tekst',
     tooltipPath:        'P({path}) = {prob}',
     tooltipRoot:        'Węzeł korzeń',
     errMinOutcomes:     'Dodaj co najmniej 2 wyniki.',
@@ -118,8 +124,8 @@ function t(key) {
 }
 
 /**
- * Applies the active language to all [data-i18n] and [data-i18n-title] elements
- * and dynamic placeholder attributes.
+ * Applies the active language to all [data-i18n] and [data-i18n-title]
+ * elements and dynamic placeholder attributes.
  */
 function applyLang() {
   document.documentElement.lang = currentLang;
@@ -132,7 +138,6 @@ function applyLang() {
     el.title = t(el.getAttribute('data-i18n-title'));
   });
 
-  /* Update dynamic placeholders in the outcomes table */
   document.querySelectorAll('.lbl-input').forEach(function (el) {
     el.placeholder = t('colLabel');
   });

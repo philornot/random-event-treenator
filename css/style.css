@@ -10,7 +10,7 @@
   --border:    #d5cec4;
   --text:      #1c1710;
   --muted:     #74685a;
-  --accent:    #2255a4;
+  --accent:    #2a55a8;
   --amber:     #9a5c0c;
   --green:     #1a6e38;
   --red:       #a82020;
@@ -18,6 +18,9 @@
 
   --tree-bg:   #faf8f4;
   --prob-patch:#faf8f4dd;
+
+  --grad-from: #2a55a8;
+  --grad-to:   #6644bb;
 }
 
 [data-theme="dark"] {
@@ -27,7 +30,7 @@
   --border:    #30363d;
   --text:      #e6edf3;
   --muted:     #8b949e;
-  --accent:    #58a6ff;
+  --accent:    #5da8ff;
   --amber:     #ffa657;
   --green:     #3fb950;
   --red:       #f85149;
@@ -35,6 +38,9 @@
 
   --tree-bg:   #0d1117;
   --prob-patch:#0d1117dd;
+
+  --grad-from: #7ab4ff;
+  --grad-to:   #b090f8;
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
@@ -76,7 +82,8 @@ header {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 600;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, var(--accent) 25%, var(--amber));
+  /* Uses --grad-from / --grad-to from variables.css (blue → violet) */
+  background: linear-gradient(135deg, var(--grad-from) 25%, var(--grad-to));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

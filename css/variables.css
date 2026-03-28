@@ -22,16 +22,16 @@
   --muted:     #6e6256;
 
   /* Brand colours */
-  --accent:    #1e52a0;   /* deep ink blue */
-  --amber:     #a86212;   /* warm amber */
+  --accent:    #2a55a8;   /* deep ink blue */
+  --amber:     #a86212;   /* warm amber — kept for semantic warnings only */
 
   /* Semantic colours */
   --green:     #1a6b35;
   --red:       #a31f1f;
 
-  /* Gradient used in h1 */
-  --grad-from: #1e52a0;
-  --grad-to:   #c07214;
+  /* Gradient used in h1: blue → indigo-violet */
+  --grad-from: #2a55a8;
+  --grad-to:   #6644bb;
 
   /* Probability label background */
   --prob-patch: rgba(250, 248, 244, 0.94);
@@ -49,14 +49,15 @@
   --text:      #e2ddd6;
   --muted:     #8a9199;
 
-  --accent:    #5da0f0;
+  --accent:    #5da8ff;
   --amber:     #e8a048;
 
   --green:     #3dba52;
   --red:       #f05050;
 
-  --grad-from: #6ab0ff;
-  --grad-to:   #f0a840;
+  /* Gradient: soft sky-blue → soft lilac */
+  --grad-from: #7ab4ff;
+  --grad-to:   #b090f8;
 
   --prob-patch: rgba(10, 13, 18, 0.92);
 }
